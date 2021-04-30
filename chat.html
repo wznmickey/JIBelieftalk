@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
+<text id="myId"></text>
 <button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
     class="inputB">登出</button>
 <input id="inputCertainUser"></input>
@@ -30,7 +31,7 @@
     realtime.createIMClient(currentUser).then(function (user) {
         iMClient = user;
         console.log(iMClient);
-
+        document.getElementById("myId").innerHTML=iMClient.id;
         iMClient.on('invited', function invitedEventHandler(payload, conversation) {
             console.log(payload.invitedBy, conversation.id);
         });
