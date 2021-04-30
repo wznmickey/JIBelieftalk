@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+
+<body>
+    <div class="signup">
+        <form onsubmit="return false">
+            <label for="entry_email"></label><br>
+            <p><input id="entry_email" type="email" size="64" maxLength="64" required placeholder="  请输入邮箱"
+                    class="inputA" pattern=".+@sjtu.edu.cn" title="请输入交大邮箱"></p>
+            <label for="password"></label><br>
+            <p><input placeholder="  请输入密码" type="password" id="entry_pass" value="" class="inputA"></p>
+            <input type="submit" value="注册/登录" id="entry_btn" onclick="sign()"
+                style="background-color: rgba(255, 255, 255, .2); " class="inputB"></button>
+            <input type="submit" value="重置密码" id="entry_btn" onclick="changepass()"
+                style="background-color: rgba(255, 255, 255, .2); " class="inputB"></button>
+            <div id="message">
+            </div>
+        </form>
+    </div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/leancloud-storage@4.10.1/dist/av-min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/leancloud-realtime@5.0.0-rc.5/dist/im-browser.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/leancloud-realtime-plugin-typed-messages@3.1.0/dist/typed-messages.min.js"></script>
+
+<script>
+    const { Realtime, TextMessage, TypedMessagesPlugin, ImageMessage } = AV;
+    const realtime = new Realtime({
+        appId: '65ITQv1gCBeVOfaB5lY2YsxE-9Nh9j0Va',
+        appKey: '5Jg7aEOsyhVt3JLESAH55H8o',
+        server: 'https://api.belief.wznmickey.com',
+        plugins: [TypedMessagesPlugin],
+    });
+    AV.init({
+        appId: "65ITQv1gCBeVOfaB5lY2YsxE-9Nh9j0Va",
+        appKey: "5Jg7aEOsyhVt3JLESAH55H8o",
+        serverURL: "https://api.belief.wznmickey.com"
+    });
+    const currentUser = AV.User.current();
+    if (currentUser) {
+        window.location.href = "chat.html";
+    }
+    function sign() {
+        const user = new AV.User();
+        user.setUsername(document.getElementById("entry_email").value);
+        user.setPassword(document.getElementById("entry_pass").value);
+        user.setEmail(document.getElementById("entry_email").value);
+        var aim = /.+@sjtu.edu.cn/;
+        if (aim.test(document.getElementById("entry_email").value) == true) {
+            console.log(aim.test(document.getElementById("entry_email").value));
+            AV.User.requestEmailVerify(document.getElementById("entry_email").value);
+            user.signUp().then(function (loginedUser) {
+                AV.User.logIn(document.getElementById("entry_email").value, document.getElementById("entry_pass").value).then(function (loginedUser) {
+                    window.location.href = "chat.html";
+                }, function (error) {
+                    document.getElementById("message").innerHTML = "注册错误，请确认密码或邮箱，邮箱应为交大邮箱";
+                });
+            }, (function (error) {
+                AV.User.logIn(document.getElementById("entry_email").value, document.getElementById("entry_pass").value).then(function (loginedUser) {
+                    window.location.href = "chat.html";
+                }, function (error) {
+                    document.getElementById("message").innerHTML = "登录错误，请确认密码或邮箱，邮箱应为交大邮箱";
+                });
+            }));
+        } else {
+            document.getElementById("message").innerHTML = "请确认邮箱，邮箱应为交大邮箱";
+        }
+    }
+    function changepass() {
+        AV.User.requestPasswordReset(document.getElementById("entry_email").value);
+    }
+</script>

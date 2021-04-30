@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
+    class="inputB">登出</button>
+<input id="inputCertainUser"></input>
+<button id="connectCertainUser" onclick="connect()">连接</button>
+<input id="message"></input>
+<button id="sendmessage" onclick="send()"> 发送</button>
+<text id="received"></text>
+<script src="//cdn.jsdelivr.net/npm/leancloud-storage@4.10.1/dist/av-min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/leancloud-realtime@5.0.0-rc.5/dist/im-browser.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/leancloud-realtime-plugin-typed-messages@3.1.0/dist/typed-messages.min.js"></script>
+
+<script>
+    const { Realtime, TextMessage, TypedMessagesPlugin, ImageMessage } = AV;
+    const realtime = new Realtime({
+        appId: '65ITQv1gCBeVOfaB5lY2YsxE-9Nh9j0Va',
+        appKey: '5Jg7aEOsyhVt3JLESAH55H8o',
+        server: 'https://api.belief.wznmickey.com',
+        plugins: [TypedMessagesPlugin],
+    });
+    AV.init({
+        appId: "65ITQv1gCBeVOfaB5lY2YsxE-9Nh9j0Va",
+        appKey: "5Jg7aEOsyhVt3JLESAH55H8o",
+        serverURL: "https://api.belief.wznmickey.com"
+    });
+    const currentUser = AV.User.current();
+    var iMClient;
+    var conversation;
+    realtime.createIMClient(currentUser).then(function (user) {
+        iMClient = user;
+        console.log(iMClient);
+
+        iMClient.on('invited', function invitedEventHandler(payload, conversation) {
+            console.log(payload.invitedBy, conversation.id);
+        });
+
+        user.on('message', function (message, conversation) {
+            console.log('收到新消息：' + message.text);
+            document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + message.from + ":" + message.text;
+            conversation.queryMessages({
+                limit: 20, 
+            }).then(function (messages) {
+                for (var i=0;i<messages.length;i++)
+                {
+                    document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + messages[i].from + ":" + messages[i].text;
+ 
+                }
+            }).catch(console.error.bind(console));
+        });
+
+    });
+    console.log(iMClient);
+    console.log(iMClient);
+    if (!currentUser) {
+        window.location.href = "index.html";
+    }
+    function logout() {
+        AV.User.logOut();
+        window.location.href = "index.html";
+    }
+    function connect() {
+        iMClient.createConversation({
+            members: [document.getElementById("inputCertainUser").value],
+            name: 'testconversation',
+            unique: true
+        }).then(function (con) {
+            conversation = con;
+        });
+    }
+    function send() {
+        conversation.send(new TextMessage(document.getElementById("message").value)).then(function (message) {
+            console.log('发送成功！');
+            document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + iMClient.id + ":" + document.getElementById("message").value;
+
+        }).catch(console.error);
+
+    }
+</script>
