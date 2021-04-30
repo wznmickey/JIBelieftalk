@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<text id="myId"></text>
+<p><text>我的Id:</text><text id="myId">登录中</text></p>
+<p><text>连接的对话者:</text><text id="partId">暂无</text></p>
 <button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
     class="inputB">登出</button>
-<input id="inputCertainUser"></input>
-<button id="connectCertainUser" onclick="connect()">连接</button>
-<input id="message"></input>
-<button id="sendmessage" onclick="send()"> 发送</button>
-<text id="received"></text>
+<div>
+    <div id="contacter" style="position: absolute; width: 29%;max-width: 29%;">
+        <ul class="list"style="list-style-type: none;padding-inline-start: 0%;" >
+        </ul>
+    </div>
+    <div style="position:absolute; margin-left:30%">
+        <input id="inputCertainUser"></input>
+        <button id="connectCertainUser" onclick="connect()">连接</button>
+        <input id="message"></input>
+        <button id="sendmessage" onclick="send()"> 发送</button>
+        <text id="received"></text>
+    </div>
+
+</div>
 <script src="//cdn.jsdelivr.net/npm/leancloud-storage@4.10.1/dist/av-min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/leancloud-realtime@5.0.0-rc.5/dist/im-browser.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/leancloud-realtime-plugin-typed-messages@3.1.0/dist/typed-messages.min.js"></script>
-
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
 <script>
     const { Realtime, TextMessage, TypedMessagesPlugin, ImageMessage } = AV;
     const realtime = new Realtime({
@@ -31,33 +41,55 @@
     realtime.createIMClient(currentUser).then(function (user) {
         iMClient = user;
         console.log(iMClient);
-        document.getElementById("myId").innerHTML=iMClient.id;
+        document.getElementById("myId").innerHTML = iMClient.id;
+        var contacterquery = iMClient.getQuery();
+        contacterquery.find().then(function (conversations) {
+            console.log(conversations);
+            var options = {
+                valueNames: ['Id'],
+                item: '<li><p class="Id" style="white-space:normal;word-break: break-all;"></p></li>'
+            };
+            var values = [];
+            for (var i = 0; i < conversations.length; i++) {
+                var j;
+                for (j = 0; j < conversations[i].members.length; j++) {
+                    if (conversations[i].members[j] != iMClient.id) break;
+                }
+                var tempvalue = { Id: conversations[i].members[j] };
+                values[i] = tempvalue;
+                console.log(values[i]);
+            }
+
+            var list = new List('contacter', options, values);
+        }).catch(console.error.bind(console));
+
         iMClient.on('invited', function invitedEventHandler(payload, conversation) {
             console.log(payload.invitedBy, conversation.id);
+
         });
 
         user.on('message', function (message, conversation) {
             console.log('收到新消息：' + message.text);
             document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + message.from + ":" + message.text;
             conversation.queryMessages({
-                limit: 20, 
+                limit: 20,
             }).then(function (messages) {
-                for (var i=0;i<messages.length;i++)
-                {
+                for (var i = 0; i < messages.length; i++) {
                     document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + messages[i].from + ":" + messages[i].text;
- 
+
                 }
             }).catch(console.error.bind(console));
         });
 
     });
-    console.log(iMClient);
-    console.log(iMClient);
     if (!currentUser) {
         window.location.href = "index.html";
     }
     function logout() {
         AV.User.logOut();
+        iMClient.close().then(function () {
+            console.log('退出登录');
+        }).catch(console.error.bind(console));
         window.location.href = "index.html";
     }
     function connect() {
@@ -67,6 +99,7 @@
             unique: true
         }).then(function (con) {
             conversation = con;
+            document.getElementById("partId").innerHTML = document.getElementById("inputCertainUser").value;
         });
     }
     function send() {

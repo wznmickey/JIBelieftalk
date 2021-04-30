@@ -47,8 +47,8 @@
         var aim = /.+@sjtu.edu.cn/;
         if (aim.test(document.getElementById("entry_email").value) == true) {
             console.log(aim.test(document.getElementById("entry_email").value));
-            AV.User.requestEmailVerify(document.getElementById("entry_email").value);
             user.signUp().then(function (loginedUser) {
+                AV.User.requestEmailVerify(document.getElementById("entry_email").value);
                 AV.User.logIn(document.getElementById("entry_email").value, document.getElementById("entry_pass").value).then(function (loginedUser) {
                     window.location.href = "chat.html";
                 }, function (error) {
