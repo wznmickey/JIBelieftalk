@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<p><text>我的Id:</text><text id="myId">登录中</text></p>
-<p><text>连接的对话者:</text><text id="partId">暂无</text></p>
-<button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
-    class="inputB">登出</button>
-<button type="button" onclick="getHistory()">获取历史记录</button>
-<div>
-    <div id="contacter" style="position: absolute; width: 29%;max-width: 29%;">
-        <ul class="list" style="list-style-type: none;padding-inline-start: 0%;">
-        </ul>
-    </div>
-    <div style="position:absolute; margin-left:30%">
+
+<!--left part-->
+<div id="contacter" style="position: fixed; width: 29%;max-width: 29%;">
+    <div>
         <input id="inputCertainUser"></input>
         <button id="connectCertainUser" onclick="connect()">连接</button>
-        <input id="message"></input>
-        <button id="sendmessage" onclick="send()"> 发送</button>
-        <text id="received" style="white-space:normal;word-wrap:break-word;word-break:break-all"></text>
     </div>
+    <ul class="list" style="list-style-type: none;padding-inline-start: 0%;">
+    </ul>
 
 </div>
+<!--right part-->
+<div style="margin-left:30%;text-align: center;">
+
+    <div
+        style="position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;">
+        <button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
+            class="inputB">登出</button>
+        <text>我的Id:</text><text id="myId">登录中</text>
+        <text>连接的对话者:</text><text id="partId">暂无</text>
+    </div>
+    <text id="received" style="top:11%;white-space:normal;word-wrap:break-word;word-break:break-all"></text>
+    <div style="position:fixed;top:90%;left:50%">
+        <input id="message"></input>
+        <button id="sendmessage" onclick="send()">发送</button>
+        <button id="getHistory" type="button" onclick="getHistory()">获取历史记录</button>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="//cdn.jsdelivr.net/npm/leancloud-storage@4.10.1/dist/av-min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/leancloud-realtime@5.0.0-rc.5/dist/im-browser.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/leancloud-realtime-plugin-typed-messages@3.1.0/dist/typed-messages.min.js"></script>
@@ -43,12 +54,14 @@
     function getHistory() {
         messageIterator.next().then(function (result) {
             var messages = result.value;
-            var temp="";
+            var temp = "";
             for (var i = 0; i < messages.length; i++) {
                 temp = temp + "<p>" + messages[i].from + ":" + messages[i].text;
             }
             document.getElementById("received").innerHTML = temp + document.getElementById("received").innerHTML;
+            $('html,body').animate({ scrollTop: "100000px" }, 100);
         }).catch(console.error.bind(console));
+        $('html,body').animate({ scrollTop: "100000px" }, 100);
     }
     function setContacterlist(iMClient) {
         var contacterquery = iMClient.getQuery();
@@ -56,7 +69,7 @@
             console.log(conversations);
             var options = {
                 valueNames: ['Id'],
-                item: '<li><p class="Id" style="white-space:normal;word-break: break-all;"></p></li>'
+                item: '<li><button class="Id" style="width: 100%;white-space:normal;word-break: break-all;" onclick="setcontacter(this)"></button></li>'
             };
             var values = [];
             for (var i = 0; i < conversations.length; i++) {
@@ -73,6 +86,10 @@
             List('contacter', options, values);
         }).catch(console.error.bind(console));
     }
+    function setcontacter(event) {
+        document.getElementById("inputCertainUser").value = event.innerHTML;
+        connect();
+    }
     realtime.createIMClient(currentUser).then(function (user) {
         iMClient = user;
         console.log(iMClient);
@@ -87,7 +104,6 @@
         user.on('message', function (message, conversation) {
             console.log('收到新消息：' + message.text);
             document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + message.from + ":" + message.text;
-
         });
 
     });
@@ -118,6 +134,7 @@
                     document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + messages[i].from + ":" + messages[i].text;
                 }
             }).catch(console.error.bind(console));
+            document.getElementById("inputCertainUser").value = "";
         });
     }
     function send() {
