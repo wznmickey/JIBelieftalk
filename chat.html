@@ -4,9 +4,10 @@
 <p><text>连接的对话者:</text><text id="partId">暂无</text></p>
 <button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
     class="inputB">登出</button>
+<button type="button" onclick="getHistory()">获取历史记录</button>
 <div>
     <div id="contacter" style="position: absolute; width: 29%;max-width: 29%;">
-        <ul class="list"style="list-style-type: none;padding-inline-start: 0%;" >
+        <ul class="list" style="list-style-type: none;padding-inline-start: 0%;">
         </ul>
     </div>
     <div style="position:absolute; margin-left:30%">
@@ -14,7 +15,7 @@
         <button id="connectCertainUser" onclick="connect()">连接</button>
         <input id="message"></input>
         <button id="sendmessage" onclick="send()"> 发送</button>
-        <text id="received"></text>
+        <text id="received" style="white-space:normal;word-wrap:break-word;word-break:break-all"></text>
     </div>
 
 </div>
@@ -23,6 +24,7 @@
 <script src="//cdn.jsdelivr.net/npm/leancloud-realtime-plugin-typed-messages@3.1.0/dist/typed-messages.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
 <script>
+    var messageIterator;
     const { Realtime, TextMessage, TypedMessagesPlugin, ImageMessage } = AV;
     const realtime = new Realtime({
         appId: '65ITQv1gCBeVOfaB5lY2YsxE-9Nh9j0Va',
@@ -38,10 +40,17 @@
     const currentUser = AV.User.current();
     var iMClient;
     var conversation;
-    realtime.createIMClient(currentUser).then(function (user) {
-        iMClient = user;
-        console.log(iMClient);
-        document.getElementById("myId").innerHTML = iMClient.id;
+    function getHistory() {
+        messageIterator.next().then(function (result) {
+            var messages = result.value;
+            var temp="";
+            for (var i = 0; i < messages.length; i++) {
+                temp = temp + "<p>" + messages[i].from + ":" + messages[i].text;
+            }
+            document.getElementById("received").innerHTML = temp + document.getElementById("received").innerHTML;
+        }).catch(console.error.bind(console));
+    }
+    function setContacterlist(iMClient) {
         var contacterquery = iMClient.getQuery();
         contacterquery.find().then(function (conversations) {
             console.log(conversations);
@@ -59,26 +68,26 @@
                 values[i] = tempvalue;
                 console.log(values[i]);
             }
-
             var list = new List('contacter', options, values);
+            list.clear();
+            List('contacter', options, values);
         }).catch(console.error.bind(console));
+    }
+    realtime.createIMClient(currentUser).then(function (user) {
+        iMClient = user;
+        console.log(iMClient);
+        document.getElementById("myId").innerHTML = iMClient.id;
+        setContacterlist(iMClient);
 
         iMClient.on('invited', function invitedEventHandler(payload, conversation) {
             console.log(payload.invitedBy, conversation.id);
-
+            setContacterlist(iMClient);
         });
 
         user.on('message', function (message, conversation) {
             console.log('收到新消息：' + message.text);
             document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + message.from + ":" + message.text;
-            conversation.queryMessages({
-                limit: 20,
-            }).then(function (messages) {
-                for (var i = 0; i < messages.length; i++) {
-                    document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + messages[i].from + ":" + messages[i].text;
 
-                }
-            }).catch(console.error.bind(console));
         });
 
     });
@@ -100,6 +109,15 @@
         }).then(function (con) {
             conversation = con;
             document.getElementById("partId").innerHTML = document.getElementById("inputCertainUser").value;
+            setContacterlist(iMClient);
+            document.getElementById("received").innerHTML = "";
+            messageIterator = con.createMessagesIterator({ limit: 20 });
+            messageIterator.next().then(function (result) {
+                var messages = result.value;
+                for (var i = 0; i < messages.length; i++) {
+                    document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + messages[i].from + ":" + messages[i].text;
+                }
+            }).catch(console.error.bind(console));
         });
     }
     function send() {
