@@ -2,7 +2,7 @@
 <meta charset="UTF-8">
 
 <!--left part-->
-<div id="leftpart" style="position: fixed; width: 29%;max-width: 29%;">
+<div id="leftpart" style="position: fixed; width: 29%;max-width: 29%;font-size:24px;text-size-adjust: none;">
     <div>
         <input id="inputCertainUser"></input>
         <button id="connectCertainUser" onclick="connect()">连接</button>
@@ -16,7 +16,7 @@
 </div>
 
 <!--right part-->
-<div id="rightpart" style="margin-left:30%;text-align: center;">
+<div id="rightpart" style="margin-left:30%;text-align: center;font-size:24px;text-size-adjust: none;">
     <div id="toppart"
         style="position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;">
         <button onclick="switchleftpart()">侧栏</button>
@@ -91,13 +91,13 @@
     function switchleftpart() {
         if (document.getElementById("leftpart").hidden == false) {
             document.getElementById("leftpart").hidden = true;
-            document.getElementById("rightpart").style = "text-align:center";
+            document.getElementById("rightpart").style = "text-align:center;font-size:24px;text-size-adjust: none;";
             document.getElementById("toppart").style = "position: fixed;left: 50%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
             document.getElementById("bottompart").style = "position:fixed;top:90%;left:50%;transform: translateX(-50%);";
         }
         else {
             document.getElementById("leftpart").hidden = false;
-            document.getElementById("rightpart").style = "margin-left:30%; text-align:center";
+            document.getElementById("rightpart").style = "margin-left:30%; text-align:center;font-size:24px;text-size-adjust: none;";
             document.getElementById("toppart").style = "position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
             document.getElementById("bottompart").style = "position:fixed;top:90%;left:65%;transform: translateX(-50%);";
 
