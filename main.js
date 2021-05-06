@@ -65,7 +65,7 @@ function setContacterlist(iMClient) {
         console.log(conversations);
         var options = {
             valueNames: [{ data: ['Id'] }, 'nickname'],
-            item: '<li onclick="setcontacter(this)"><button class="nickname" style="width: 100%;white-space:normal;word-break: break-all;"></button></li>'
+            item: '<li onclick="setcontacter(this)"><button class="nickname" style="width: 100%;white-space:normal;word-break: break-all; font-size:larger"></button></li>'
         };
         var values = [];
         for (var i = 0; i < conversations.length; i++) {
@@ -104,15 +104,15 @@ function setContacterlist(iMClient) {
 function switchleftpart() {
     if (document.getElementById("leftpart").hidden == false) {
         document.getElementById("leftpart").hidden = true;
-        document.getElementById("rightpart").style = "text-align:center;font-size:24px;text-size-adjust: none;";
-        document.getElementById("toppart").style = "position: fixed;left: 50%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
-        document.getElementById("bottompart").style = "position:fixed;top:90%;left:50%;transform: translateX(-50%);";
+        document.getElementById("rightpart").style.marginLeft="0%";// = "text-align:center;font-size:24px;text-size-adjust: none;";
+        document.getElementById("toppart").style.left="50%";// = "position: fixed;left: 50%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
+        document.getElementById("bottompart").style.left="50%";// = "position:fixed;top:90%;left:50%;transform: translateX(-50%);";
     }
     else {
         document.getElementById("leftpart").hidden = false;
-        document.getElementById("rightpart").style = "margin-left:30%; text-align:center;font-size:24px;text-size-adjust: none;";
-        document.getElementById("toppart").style = "position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
-        document.getElementById("bottompart").style = "position:fixed;top:90%;left:65%;transform: translateX(-50%);";
+        document.getElementById("rightpart").style.marginLeft="30%";// = "margin-left:30%; text-align:center;font-size:24px;text-size-adjust: none;";
+        document.getElementById("toppart").style.left="65%"; // = "position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
+        document.getElementById("bottompart").style.left="65%"; // = "position:fixed;top:90%;left:65%;transform: translateX(-50%);";
 
     }
 }

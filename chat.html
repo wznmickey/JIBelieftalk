@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-
+<link rel="stylesheet" type="text/css" href="main.css">
 <!--left part-->
-<div id="leftpart" style="position: fixed; width: 29%;max-width: 29%;font-size:24px;text-size-adjust: none;">
+<div id="leftpart" style="position: fixed; width: 29%;max-width: 29%;font-size:xx-large;text-size-adjust: none;">
     <div>
         <input id="inputCertainUser"></input>
-        <button id="connectCertainUser" onclick="connect()">连接</button>
+        <button id="connectCertainUser" onclick="connect()" class="sizexxLarge">连接</button>
     </div>
     <div id="contacter">
         <ul class="list" style="list-style-type: none;padding-inline-start: 0%;">
         </ul>
     </div>
     <button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
-        class="inputB">登出</button>
+        class="sizexxLarge" class="inputB"><span class="size_xxLarge">登出</span></button>
 </div>
 
 <!--right part-->
-<div id="rightpart" style="margin-left:30%;text-align: center;font-size:24px;text-size-adjust: none;">
+<div id="rightpart" style="margin-left:30%;text-align: center;font-size:xx-large;text-size-adjust: none;">
     <div id="toppart"
         style="position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;">
-        <button onclick="switchleftpart()">侧栏</button>
+        <button onclick="switchleftpart()" class="sizexxLarge">侧栏</button>
         <text>我的昵称:</text><text id="mynickname">登录中</text>
-        <button id="submitnickname" onclick="changenickname()">修改</button>
+        <button id="submitnickname" onclick="changenickname()" class="sizexxLarge">修改</button>
         <text>连接的对话者:</text><text id="partId">暂无</text>
     </div>
-    <text id="received" style="top:11%;white-space:normal;word-wrap:break-word;word-break:break-all"></text>
+    <div style="margin-top: 10%;position:absolute; white-space:normal;word-wrap:break-word;word-break:break-all">
+        <text id="received" style="white-space:normal;word-wrap:break-word;word-break:break-all"></text>
+        <div style="height:10vh">
+        </div>
+    </div>
     <div id="bottompart" style="position:fixed;top:90%;left:65%;transform: translateX(-50%);">
         <input id="message"></input>
-        <button id="sendmessage" onclick="send()">发送</button>
-        <button id="getHistory" type="button" onclick="getHistory()">获取历史记录</button>
+        <button id="sendmessage" onclick="send()" class="sizexxLarge">发送</button>
+        <button id="getHistory" type="button" onclick="getHistory()" class="sizexxLarge">获取历史记录</button>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
