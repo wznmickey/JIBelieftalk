@@ -53,6 +53,10 @@
     const currentUser = AV.User.current();
     var iMClient;
     var conversation;
+    function sleep(time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
     function getHistory() {
         messageIterator.next().then(function (result) {
             var messages = result.value;
@@ -79,13 +83,32 @@
                 for (j = 0; j < conversations[i].members.length; j++) {
                     if (conversations[i].members[j] != iMClient.id) break;
                 }
-                var tempvalue = { Id: conversations[i].members[j] };
-                values[i] = tempvalue;
-                console.log(values[i]);
+                var nicknamequery = new AV.Query('User_nickname');
+                var tempvalue;
+                (function (i, j) {
+                    const nicknametempfind = new AV.Query('User_nickname');
+                    nicknametempfind.equalTo('UserId', conversations[i].members[j]);
+                    sleep(20).then(() => {
+                        nicknametempfind.find().then((tempuser) => {
+                            console.log(tempuser);
+                            console.log(tempuser.length);
+                            if (tempuser.length >= 1) {
+                                console.log(tempuser[0].attributes.nickname);
+                                tempvalue = { Id: tempuser[0].attributes.nickname};
+                            }
+                            else {
+                                tempvalue = { Id: conversations[i].members[j] };
+                            }
+                            values[i] = tempvalue;
+                            console.log(tempvalue);
+                            var list = new List('contacter', options, values);
+                            list.clear();
+                            List('contacter', options, values);
+                        });
+                    });
+                })(i, j);
             }
-            var list = new List('contacter', options, values);
-            list.clear();
-            List('contacter', options, values);
+
         }).catch(console.error.bind(console));
     }
     function switchleftpart() {
@@ -161,5 +184,9 @@
 
         }).catch(console.error);
 
+    }
+    function sendonline() {
+        const message = new TextMessage('OFFLINEofflineOFFLINE_willMessage');
+        conversation.send(message, { will: true });
     }
 </script>
