@@ -73,9 +73,11 @@ function setContacterlist(iMClient) {
             for (j = 0; j < conversations[i].members.length; j++) {
                 if (conversations[i].members[j] != iMClient.id) break;
             }
+            if (j >= conversations[i].members.length) break;
             var tempvalue;
             (function (i, j) {
                 const nicknametempfind = new AV.Query('User_nickname');
+                console.log(conversations[i].members[j]);
                 nicknametempfind.equalTo('UserId', conversations[i].members[j]);
                 //sleep(20).then(() => {
                 nicknametempfind.find().then((tempuser) => {
@@ -104,15 +106,15 @@ function setContacterlist(iMClient) {
 function switchleftpart() {
     if (document.getElementById("leftpart").hidden == false) {
         document.getElementById("leftpart").hidden = true;
-        document.getElementById("rightpart").style.marginLeft="0%";// = "text-align:center;font-size:24px;text-size-adjust: none;";
-        document.getElementById("toppart").style.left="50%";// = "position: fixed;left: 50%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
-        document.getElementById("bottompart").style.left="50%";// = "position:fixed;top:90%;left:50%;transform: translateX(-50%);";
+        document.getElementById("rightpart").style.marginLeft = "0%";// = "text-align:center;font-size:24px;text-size-adjust: none;";
+        document.getElementById("toppart").style.left = "50%";// = "position: fixed;left: 50%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
+        document.getElementById("bottompart").style.left = "50%";// = "position:fixed;top:90%;left:50%;transform: translateX(-50%);";
     }
     else {
         document.getElementById("leftpart").hidden = false;
-        document.getElementById("rightpart").style.marginLeft="30%";// = "margin-left:30%; text-align:center;font-size:24px;text-size-adjust: none;";
-        document.getElementById("toppart").style.left="65%"; // = "position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
-        document.getElementById("bottompart").style.left="65%"; // = "position:fixed;top:90%;left:65%;transform: translateX(-50%);";
+        document.getElementById("rightpart").style.marginLeft = "30%";// = "margin-left:30%; text-align:center;font-size:24px;text-size-adjust: none;";
+        document.getElementById("toppart").style.left = "65%"; // = "position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
+        document.getElementById("bottompart").style.left = "65%"; // = "position:fixed;top:90%;left:65%;transform: translateX(-50%);";
 
     }
 }
@@ -164,8 +166,15 @@ function connect() {
         unique: true
     }).then(function (con) {
         conversation = con;
-        document.getElementById("partId").innerHTML = document.getElementById("inputCertainUser").value;
+        var nicknamequery = new AV.Query('User_nickname');
+        nicknamequery.equalTo('UserId', document.getElementById("inputCertainUser").value);
+        nicknamequery.find().then((nickname) => {
+            if (nickname.length >= 1) document.getElementById("partId").innerHTML = nickname[0].get("nickname");
+            else document.getElementById("partId").innerHTML = document.getElementById("inputCertainUser").value;
+        });
+
         setContacterlist(iMClient);
+
         document.getElementById("received").innerHTML = "";
         messageIterator = con.createMessagesIterator({ limit: 20 });
         messageIterator.next().then(function (result) {
@@ -189,3 +198,16 @@ function send() {
 //    const message = new TextMessage('OFFLINEofflineOFFLINE_willMessage');
 //    conversation.send(message, { will: true });
 //}
+function findRandomcontacter() {
+    var query = new AV.Query('User_nickname');
+    query.count().then((count) => {
+        var n = count;
+        var contacter = Math.ceil(Math.random() * n);
+        var tempquery = new AV.Query('User_nickname');
+        tempquery.equalTo('Index', contacter);
+        tempquery.find().then((list) => {
+            document.getElementById("inputCertainUser").value = list[0].get('UserId');
+            connect();
+        });
+    });
+}
