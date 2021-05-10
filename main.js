@@ -14,6 +14,10 @@ AV.init({
 const currentUser = AV.User.current();
 var iMClient;
 var conversation;
+var myNickname;
+var conversationContacterNickename;
+var myId;
+var conversationContacterId;
 function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
@@ -52,7 +56,8 @@ function getHistory() {
         var messages = result.value;
         var temp = "";
         for (var i = 0; i < messages.length; i++) {
-            temp = temp + "<p>" + messages[i].from + ":" + messages[i].text;
+            if (messages[i].from == myId) { temp = temp + "<p>" + myNickname + ":" + messages[i].text; }
+            else { temp = temp + "<p>" + conversationContacterNickename + ":" + messages[i].text; }
         }
         document.getElementById("received").innerHTML = temp + document.getElementById("received").innerHTML;
         $('html,body').animate({ scrollTop: "100000px" }, 100);
@@ -128,6 +133,8 @@ function getNownickname() {
     nicknamequery.find().then((nickname) => {
         nickname[0].fetch().then((newnickname) => {
             document.getElementById("mynickname").innerHTML = newnickname.get("nickname");
+            myNickname = document.getElementById("mynickname").innerHTML;
+            console.log(myNickname);
         }
         )
     })
@@ -137,7 +144,7 @@ realtime.createIMClient(currentUser).then(function (user) {
     console.log(iMClient);
     getNownickname();
     setContacterlist(iMClient);
-
+    myId = iMClient.id;
     iMClient.on('invited', function invitedEventHandler(payload, conversation) {
         console.log(payload.invitedBy, conversation.id);
         setContacterlist(iMClient);
@@ -145,7 +152,7 @@ realtime.createIMClient(currentUser).then(function (user) {
 
     user.on('message', function (message, conversation) {
         console.log('收到新消息：' + message.text);
-        document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + message.from + ":" + message.text;
+        //document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + message.from + ":" + message.text;
     });
 
 });
@@ -169,28 +176,37 @@ function connect() {
         var nicknamequery = new AV.Query('User_nickname');
         nicknamequery.equalTo('UserId', document.getElementById("inputCertainUser").value);
         nicknamequery.find().then((nickname) => {
-            if (nickname.length >= 1) document.getElementById("partId").innerHTML = nickname[0].get("nickname");
-            else document.getElementById("partId").innerHTML = document.getElementById("inputCertainUser").value;
+            if (nickname.length >= 1) {
+                document.getElementById("partId").innerHTML = nickname[0].get("nickname");
+                conversationContacterNickename = nickname[0].get("nickname");
+                conversationContacterId = document.getElementById("inputCertainUser").value;
+            }
+            else {
+                document.getElementById("partId").innerHTML = document.getElementById("inputCertainUser").value;
+                conversationContacterNickename = document.getElementById("inputCertainUser").value;
+                conversationContacterId = document.getElementById("inputCertainUser").value;
+            }
+            setContacterlist(iMClient);
+
+            document.getElementById("received").innerHTML = "";
+            messageIterator = con.createMessagesIterator({ limit: 20 });
+            messageIterator.next().then(function (result) {
+                var messages = result.value;
+                for (var i = 0; i < messages.length; i++) {
+                    if (messages[i].from == myId) { document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + myNickname + ":" + messages[i].text; }
+                    else { document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + conversationContacterNickename + ":" + messages[i].text; }
+                }
+            }).catch(console.error.bind(console));
+            document.getElementById("inputCertainUser").value = "";
         });
 
-        setContacterlist(iMClient);
 
-        document.getElementById("received").innerHTML = "";
-        messageIterator = con.createMessagesIterator({ limit: 20 });
-        messageIterator.next().then(function (result) {
-            var messages = result.value;
-            for (var i = 0; i < messages.length; i++) {
-                document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + messages[i].from + ":" + messages[i].text;
-            }
-        }).catch(console.error.bind(console));
-        document.getElementById("inputCertainUser").value = "";
     });
 }
 function send() {
     conversation.send(new TextMessage(document.getElementById("message").value)).then(function (message) {
         console.log('发送成功！');
-        document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + iMClient.id + ":" + document.getElementById("message").value;
-
+        document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + myNickname + ":" + document.getElementById("message").value;
     }).catch(console.error);
 
 }

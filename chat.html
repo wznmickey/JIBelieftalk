@@ -25,13 +25,13 @@
         <button id="submitnickname" onclick="changenickname()" class="sizexxLarge">修改</button>
         <text>连接的对话者:</text><text id="partId">暂无</text>
     </div>
-    <div style="margin-top: 10%;position:absolute; white-space:normal;word-wrap:break-word;word-break:break-all">
+    <div style="margin-top: 10%;position:absolute; white-space:normal;word-wrap:break-word;word-break:break-all;display: contents;">
         <text id="received" style="white-space:normal;word-wrap:break-word;word-break:break-all"></text>
-        <div style="height:10vh">
+        <div style="height:15vh">
         </div>
     </div>
-    <div id="bottompart" style="position:fixed;top:90%;left:65%;transform: translateX(-50%);">
-        <input id="message"></input>
+    <div id="bottompart" style="position:fixed;top:85%;left:65%;transform: translateX(-50%);">
+        <textarea id="message" style="font-size: xx-large;"></textarea>
         <button id="sendmessage" onclick="send()" class="sizexxLarge">发送</button>
         <button id="getHistory" type="button" onclick="getHistory()" class="sizexxLarge">获取历史记录</button>
     </div>
