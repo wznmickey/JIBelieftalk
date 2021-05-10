@@ -52,13 +52,13 @@
                 AV.User.logIn(document.getElementById("entry_email").value, document.getElementById("entry_pass").value).then(function (loginedUser) {
                     window.location.href = "chat.html";
                 }, function (error) {
-                    document.getElementById("message").innerHTML = "注册错误，请确认密码或邮箱，邮箱应为交大邮箱";
+                    document.getElementById("message").innerHTML = "请邮件确认后登录";
                 });
             }, (function (error) {
                 AV.User.logIn(document.getElementById("entry_email").value, document.getElementById("entry_pass").value).then(function (loginedUser) {
                     window.location.href = "chat.html";
                 }, function (error) {
-                    document.getElementById("message").innerHTML = "登录错误，请确认密码或邮箱，邮箱应为交大邮箱";
+                    document.getElementById("message").innerHTML = "登录错误，请检查密码或邮箱";
                 });
             }));
         } else {
