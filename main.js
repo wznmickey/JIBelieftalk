@@ -18,6 +18,8 @@ var myNickname;
 var conversationContacterNickename;
 var myId;
 var conversationContacterId;
+var nickname2Id = new Map();
+var Id2nickname = new Map();
 function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
@@ -91,9 +93,14 @@ function setContacterlist(iMClient) {
                     if (tempuser.length >= 1) {
                         console.log(tempuser[0].get('nickname'));
                         tempvalue = { nickname: tempuser[0].get('nickname'), Id: conversations[i].members[j] };
+                        nickname2Id.set(tempuser[0].get('nickname'), conversations[i].members[j]);
+                        Id2nickname.set(conversations[i].members[j], tempuser[0].get('nickname'));
                     }
                     else {
                         tempvalue = { nickname: conversations[i].members[j], Id: conversations[i].members[j] };
+                        nickname2Id.set(conversations[i].members[j], conversations[i].members[j]);
+                        Id2nickname.set(conversations[i].members[j], conversations[i].members[j]);
+
                     }
 
                     values[i] = tempvalue;
@@ -131,12 +138,28 @@ function getNownickname() {
     var nicknamequery = new AV.Query('User_nickname');
     nicknamequery.equalTo('UserId', iMClient.id);
     nicknamequery.find().then((nickname) => {
-        nickname[0].fetch().then((newnickname) => {
-            document.getElementById("mynickname").innerHTML = newnickname.get("nickname");
+        console.log(nickname);
+        if (nickname.length == 0) {
+            const Nick = AV.Object.extend('User_nickname');
+            const nick = new Nick();
+            nick.set("nickname", iMClient.id);
+            nick.set("UserId", iMClient.id);
+            nick.save().then((nick) => {
+                console.log(`保存成功。objectId：${todo.id}`);
+            }, (error) => {
+                console.log(`wrong in saving`);
+            });
+            document.getElementById("mynickname").innerHTML = iMClient;
             myNickname = document.getElementById("mynickname").innerHTML;
-            console.log(myNickname);
         }
-        )
+        else {
+            nickname[0].fetch().then((newnickname) => {
+                document.getElementById("mynickname").innerHTML = newnickname.get("nickname");
+                myNickname = document.getElementById("mynickname").innerHTML;
+                console.log(myNickname);
+            })
+        }
+
     })
 }
 realtime.createIMClient(currentUser).then(function (user) {
@@ -152,12 +175,23 @@ realtime.createIMClient(currentUser).then(function (user) {
 
     user.on('message', function (message, conversation) {
         console.log('收到新消息：' + message.text);
-        //document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + message.from + ":" + message.text;
+        if (message.from == conversationContacterId) {
+            document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + conversationContacterNickename + ":" + message.text;
+        }
+        else {
+            newMessage(message);
+        }
     });
-
 });
 if (!currentUser) {
     window.location.href = "index.html";
+}
+function newMessage(message) {
+    console.log(message);
+    document.getElementById("newmessage").innerHTML = Id2nickname.get(message.from) + ":" + message.text;
+    sleep(2000).then(() => {
+        document.getElementById("newmessage").innerHTML = "";
+    });
 }
 function logout() {
     AV.User.logOut();
@@ -205,8 +239,11 @@ function connect() {
 }
 function send() {
     conversation.send(new TextMessage(document.getElementById("message").value)).then(function (message) {
+
         console.log('发送成功！');
+
         document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + myNickname + ":" + document.getElementById("message").value;
+        document.getElementById("message").value = "";
     }).catch(console.error);
 
 }
