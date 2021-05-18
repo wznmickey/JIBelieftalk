@@ -25,7 +25,7 @@ function sleep(time) {
 }
 function changenickname() {
     var inputbox = document.createElement("input");
-    var par = document.getElementById("toppart");
+    var par = document.getElementById("leftpart1");
     var son = document.getElementById("mynickname");
     par.insertBefore(inputbox, son);
     par.removeChild(son);
@@ -44,10 +44,12 @@ function savenickname() {
         toSave.set('nickname', newnickname);
         toSave.save();
         var textbox = document.createElement("text");
-        var par = document.getElementById("toppart");
+        var par = document.getElementById("leftpart1");
         var son = document.getElementById("inputbox");
         par.insertBefore(textbox, son);
         par.removeChild(son);
+        document.getElementById("submitnickname").innerHTML = "修改";
+        document.getElementById("submitnickname").onclick = function () {changenickname(); }
         textbox.id = "mynickname";
         getNownickname();
         alert("完成修改");
@@ -119,13 +121,13 @@ function switchleftpart() {
     if (document.getElementById("leftpart").hidden == false) {
         document.getElementById("leftpart").hidden = true;
         document.getElementById("rightpart").style.marginLeft = "0%";// = "text-align:center;font-size:24px;text-size-adjust: none;";
-        document.getElementById("toppart").style.left = "50%";// = "position: fixed;left: 50%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
+        document.getElementById("toppart").style.marginLeft = "0%";// = "position: fixed;left: 50%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
         document.getElementById("bottompart").style.left = "50%";// = "position:fixed;top:90%;left:50%;transform: translateX(-50%);";
     }
     else {
         document.getElementById("leftpart").hidden = false;
         document.getElementById("rightpart").style.marginLeft = "30%";// = "margin-left:30%; text-align:center;font-size:24px;text-size-adjust: none;";
-        document.getElementById("toppart").style.left = "65%"; // = "position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
+        document.getElementById("toppart").style.marginLeft = "30%"; // = "position: fixed;left: 65%;white-space: normal;word-wrap: break-word;word-break: break-all;height: 10%;transform: translateX(-50%);width: fit-content;max-width: 60%;";
         document.getElementById("bottompart").style.left = "65%"; // = "position:fixed;top:90%;left:65%;transform: translateX(-50%);";
 
     }
