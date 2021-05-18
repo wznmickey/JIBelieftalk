@@ -10,10 +10,10 @@
 <!--left part-->
 <div id="leftpart" style="position: fixed; width: 29%;max-width: 29%;text-size-adjust: none;">
     <div id="leftpart1">
-        <input id="inputCertainUser"></input>
-        <button id="connectCertainUser" onclick="connect()">连接</button>
-        <text id="mynickname">登录中</text>
-        <button id="submitnickname" onclick="changenickname()" class="sizexxLarge">修改</button>
+        <input id="inputCertainUser" hidden></input>
+        <button id="connectCertainUser" onclick="connect()" hidden>连接</button>
+        <text>昵称：</text><text id="mynickname">登录中</text>
+        <button id="submitnickname" onclick="changenickname()"><i class="bi bi-pencil-square"></i></button>
     </div>
     <div id="contacter">
         <ul class="list" style="list-style-type: none;padding-inline-start: 0%;">
@@ -27,33 +27,37 @@
 <!--right part-->
 <div id="rightpart" style="margin-left:30%;text-align: center;">
     <nav id="toppart" class="navbar fixed-top navbar-light bg-success"
-        style="margin-left:30%;text-align: center;max-height: 10vh;">
+        style="margin-left:30%;text-align: center;max-height: 10vh;max-height:100px">
         <a class="navbar-brand" href="#">
-            <button onclick="switchleftpart()" style="background-color: transparent;border-color: transparent;"><i class="bi bi-list"></i></button>
-            <text id="partId">谁呢</text>
+            <button onclick="switchleftpart()" style="background-color: transparent;border-color: transparent;"><i
+                    class="bi bi-list" style="font-size: xx-large;"></i></button>
+            <text id="partId" style="font-size: xx-large;">谁呢</text>
             <text id="newmesssage"></text>
         </a>
     </nav>
     <div
-        style="margin-top: 10%;position:absolute; white-space:normal;word-wrap:break-word;word-break:break-all;display: contents;">
-        <div style="height:10vh">
+        style="position:absolute; white-space:normal;word-wrap:break-word;word-break:break-all;display: contents;">
+        <div style="height:11vh; max-height:110px">
         </div>
         <text id="received" style="white-space:normal;word-wrap:break-word;word-break:break-all"></text>
-        <div style="height:15vh">
+        <div style="height:11vh;max-height:210px">
         </div>
     </div>
-    <div id="bottompart" style="position:fixed;top:85%;left:65%;transform: translateX(-50%);">
-        <div class="bg-success rounded-pill input-group mb-3" style="height:10%">
-            <textarea id="message" class="form-control" row="1"></textarea>
-            <div class="input-group-append">
-                <button id="sendmessage" onclick="send()" class="btn"><i class="bi bi-cursor"></i>
-                </button>
-                <button id="getHistory" type="button" onclick="getHistory()" class="btn"><i
-                        class="bi bi-chat-square-text"></i></button>
+    <nav id="bottompart" class="navbar fixed-bottom justify-content-center"
+        style="left:65%;transform: translateX(-50%); max-height: 10vh;max-height:200px;width:60vw">
+        <a class="navbar-brand" href="#">
+            <div class="bg-success rounded-pill input-group mb-3" style="max-height: 10vh;max-height:200px">
+                <textarea id="message" class="form-control" row="1" style="max-height: 10vh;"></textarea>
+                <div class="input-group-append">
+                    <button id="sendmessage" onclick="send()" class="btn"><i class="bi bi-cursor"
+                            style="font-size: xx-large;"></i>
+                    </button>
+                    <button id="getHistory" type="button" onclick="getHistory()" class="btn"><i
+                            class="bi bi-chat-square-text" style="font-size: xx-large;"></i></button>
+                </div>
             </div>
-        </div>
-
-    </div>
+        </a>
+    </nav>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
