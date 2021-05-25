@@ -147,7 +147,7 @@ function getNownickname() {
             nick.set("nickname", iMClient.id);
             nick.set("UserId", iMClient.id);
             nick.save().then((nick) => {
-                console.log(`保存成功。objectId：${todo.id}`);
+                console.log(`保存成功。objectId：${nick.id}`);
             }, (error) => {
                 console.log(`wrong in saving`);
             });
