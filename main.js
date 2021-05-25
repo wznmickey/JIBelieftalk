@@ -145,7 +145,7 @@ function getNownickname() {
         if (nickname.length == 0) {
             const Nick = AV.Object.extend('User_nickname');
             const nick = new Nick();
-            nick.set("nickname", iMClient.id);
+            nick.set("nickname", "路人");
             nick.set("UserId", iMClient.id);
             nick.save().then((nick) => {
                 console.log(`保存成功。objectId：${nick.id}`);
