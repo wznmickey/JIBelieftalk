@@ -152,8 +152,8 @@ function getNownickname() {
             }, (error) => {
                 console.log(`wrong in saving`);
             });
-            document.getElementById("mynickname").innerHTML = iMClient;
-            myNickname = document.getElementById("mynickname").innerHTML;
+            document.getElementById("mynickname").innerHTML = "路人";
+            myNickname = "路人";
         }
         else {
             nickname[0].fetch().then((newnickname) => {
