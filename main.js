@@ -49,7 +49,7 @@ function savenickname() {
         par.insertBefore(textbox, son);
         par.removeChild(son);
         document.getElementById("submitnickname").innerHTML = "修改";
-        document.getElementById("submitnickname").onclick = function () {changenickname(); }
+        document.getElementById("submitnickname").onclick = function () { changenickname(); }
         textbox.id = "mynickname";
         getNownickname();
         alert("完成修改");
@@ -102,9 +102,7 @@ function setContacterlist(iMClient) {
                         tempvalue = { nickname: conversations[i].members[j], Id: conversations[i].members[j] };
                         nickname2Id.set(conversations[i].members[j], conversations[i].members[j]);
                         Id2nickname.set(conversations[i].members[j], conversations[i].members[j]);
-
                     }
-
                     values[i] = tempvalue;
                     console.log(tempvalue);
                     var list = new List('contacter', options, values);
@@ -116,6 +114,41 @@ function setContacterlist(iMClient) {
         }
 
     }).catch(console.error.bind(console));
+    var chatroom = new AV.Query('ChatRoom');
+    chatroom.find().then((room) => {
+        var options = {
+            valueNames: [{ data: ['Id','name'] }, 'nickname'],
+            item: '<li style="margin: 1vh" onclick="enterchatroom(this)"><button class="nickname btn btn-outline-info" style="width: 100%;white-space:normal;word-break: break-all; font-size:larger"></button></li>'
+        };
+        var values = [];
+        for (var i = 0; i < room.length; i++) {
+            values[i] = { nickname: room[i].get('name'),name:room[i].get('name'), Id: room[i].get('pointer').id };
+        }
+        var list = new List('chatroom', options, values);
+        list.clear();
+        List('chatroom', options, values);
+    });
+}
+function enterchatroom(room) {
+    iMClient.getConversation(room.dataset.id).then(function (conversation) {
+        return conversation.join();
+    }).then(function (con) {
+        conversation=con;
+        conversationContacterNickename=room.dataset.name;
+        conversationContacterId=room.dataset.id;
+        document.getElementById("partId").innerHTML=room.dataset.name;
+        document.getElementById("received").innerHTML = "";
+        messageIterator = con.createMessagesIterator({ limit: 20 });
+        messageIterator.next().then(function (result) {
+            var messages = result.value;
+            for (var i = 0; i < messages.length; i++) {
+                if (messages[i].from == myId) { document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + myNickname + ":" + messages[i].text; }
+                else { document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + conversationContacterNickename + ":" + messages[i].text; }
+            }
+        }).catch(console.error.bind(console));
+    }).catch(console.error.bind(console));
+    switchleftpart();
+
 }
 function switchleftpart() {
     if (document.getElementById("leftpart").hidden == false) {
@@ -178,7 +211,7 @@ realtime.createIMClient(currentUser).then(function (user) {
 
     user.on('message', function (message, conversation) {
         console.log('收到新消息：' + message.text);
-        if (message.from == conversationContacterId) {
+        if (message.from == conversationContacterId || conversation.id==conversationContacterId) {
             document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + conversationContacterNickename + ":" + message.text;
         }
         else {
@@ -224,7 +257,6 @@ function connect() {
                 conversationContacterId = document.getElementById("inputCertainUser").value;
             }
             setContacterlist(iMClient);
-
             document.getElementById("received").innerHTML = "";
             messageIterator = con.createMessagesIterator({ limit: 20 });
             messageIterator.next().then(function (result) {
@@ -236,15 +268,11 @@ function connect() {
             }).catch(console.error.bind(console));
             document.getElementById("inputCertainUser").value = "";
         });
-
-
     });
 }
 function send() {
     conversation.send(new TextMessage(document.getElementById("message").value)).then(function (message) {
-
         console.log('发送成功！');
-
         document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + myNickname + ":" + document.getElementById("message").value;
         document.getElementById("message").value = "";
     }).catch(console.error);
@@ -266,4 +294,7 @@ function findRandomcontacter() {
             connect();
         });
     });
+}
+function newchatroom() {
+    iMClient.createChatRoom({ name: 'test聊天室' }).catch(console.error);
 }
