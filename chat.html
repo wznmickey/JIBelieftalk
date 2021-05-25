@@ -10,19 +10,21 @@
 <link rel="stylesheet" type="text/css" href="main.css">
 <!--left part-->
 <div id="leftpart" style="position: fixed; width: 29%;max-width: 29%;text-size-adjust: none;">
-    <div id="leftpart1">
+    <div id="leftpart1" style="text-align: center;">
         <input id="inputCertainUser" hidden></input>
         <button id="connectCertainUser" onclick="connect()" hidden>连接</button>
         <text>昵称：</text><text id="mynickname">登录中</text>
-        <button id="submitnickname" onclick="changenickname()"><i class="bi bi-pencil-square"></i></button>
+        <button class="btn btn-outline-info"id="submitnickname" onclick="changenickname()"><i class="bi bi-pencil-square"></i></button>
     </div>
     <div id="contacter">
         <ul class="list" style="list-style-type: none;padding-inline-start: 0%;">
         </ul>
     </div>
-    <button id="sendtoRandom" onclick="findRandomcontacter()">随机找人</button>
-    <button type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
+    <div style="text-align: center;">
+    <button class="btn btn-outline-info" id="sendtoRandom" onclick="findRandomcontacter()">随机找人</button>
+    <button class="btn btn-outline-info" type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
         class="inputB"><span>登出</span></button>
+    </div>
 </div>
 
 <!--right part-->

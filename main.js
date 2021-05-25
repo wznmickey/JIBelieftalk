@@ -74,7 +74,7 @@ function setContacterlist(iMClient) {
         console.log(conversations);
         var options = {
             valueNames: [{ data: ['Id'] }, 'nickname'],
-            item: '<li onclick="setcontacter(this)"><button class="nickname" style="width: 100%;white-space:normal;word-break: break-all; font-size:larger"></button></li>'
+            item: '<li style="margin: 1vh" onclick="setcontacter(this)"><button class="nickname btn btn-outline-info" style="width: 100%;white-space:normal;word-break: break-all; font-size:larger"></button></li>'
         };
         var values = [];
         for (var i = 0; i < conversations.length; i++) {
@@ -134,6 +134,7 @@ function switchleftpart() {
 }
 function setcontacter(event) {
     document.getElementById("inputCertainUser").value = event.dataset.id;
+    switchleftpart();
     connect();
 }
 function getNownickname() {
