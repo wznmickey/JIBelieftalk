@@ -39,7 +39,6 @@ function savenickname() {
     nicknametempfind.equalTo('UserId', iMClient.id);
     nicknametempfind.find().then((user) => {
         temp = user[0].id;
-        console.log(user);
         const toSave = AV.Object.createWithoutData('User_nickname', temp);
         toSave.set('nickname', newnickname);
         toSave.save();
@@ -71,7 +70,6 @@ function getHistory() {
 function setContacterlist(iMClient) {
     var contacterquery = iMClient.getQuery();
     contacterquery.find().then(function (conversations) {
-        console.log(conversations);
         var options = {
             valueNames: [{ data: ['Id'] }, 'nickname'],
             item: '<li style="margin: 1vh" onclick="setcontacter(this)"><button class="nickname btn btn-outline-info" style="width: 100%;white-space:normal;word-break: break-all; font-size:larger"></button></li>'
@@ -86,14 +84,10 @@ function setContacterlist(iMClient) {
             var tempvalue;
             (function (i, j) {
                 const nicknametempfind = new AV.Query('User_nickname');
-                console.log(conversations[i].members[j]);
                 nicknametempfind.equalTo('UserId', conversations[i].members[j]);
                 //sleep(20).then(() => {
                 nicknametempfind.find().then((tempuser) => {
-                    console.log(tempuser);
-                    console.log(tempuser.length);
                     if (tempuser.length >= 1) {
-                        console.log(tempuser[0].get('nickname'));
                         tempvalue = { nickname: tempuser[0].get('nickname'), Id: conversations[i].members[j] };
                         nickname2Id.set(tempuser[0].get('nickname'), conversations[i].members[j]);
                         Id2nickname.set(conversations[i].members[j], tempuser[0].get('nickname'));
@@ -104,7 +98,6 @@ function setContacterlist(iMClient) {
                         Id2nickname.set(conversations[i].members[j], conversations[i].members[j]);
                     }
                     values[i] = tempvalue;
-                    console.log(tempvalue);
                     var list = new List('contacter', options, values);
                     list.clear();
                     List('contacter', options, values);
@@ -117,12 +110,12 @@ function setContacterlist(iMClient) {
     var chatroom = new AV.Query('ChatRoom');
     chatroom.find().then((room) => {
         var options = {
-            valueNames: [{ data: ['Id','name'] }, 'nickname'],
+            valueNames: [{ data: ['Id', 'name'] }, 'nickname'],
             item: '<li style="margin: 1vh" onclick="enterchatroom(this)"><button class="nickname btn btn-outline-info" style="width: 100%;white-space:normal;word-break: break-all; font-size:larger"></button></li>'
         };
         var values = [];
         for (var i = 0; i < room.length; i++) {
-            values[i] = { nickname: room[i].get('name'),name:room[i].get('name'), Id: room[i].get('pointer').id };
+            values[i] = { nickname: room[i].get('name'), name: room[i].get('name'), Id: room[i].get('cid')};
         }
         var list = new List('chatroom', options, values);
         list.clear();
@@ -133,10 +126,10 @@ function enterchatroom(room) {
     iMClient.getConversation(room.dataset.id).then(function (conversation) {
         return conversation.join();
     }).then(function (con) {
-        conversation=con;
-        conversationContacterNickename=room.dataset.name;
-        conversationContacterId=room.dataset.id;
-        document.getElementById("partId").innerHTML=room.dataset.name;
+        conversation = con;
+        conversationContacterNickename = room.dataset.name;
+        conversationContacterId = room.dataset.id;
+        document.getElementById("partId").innerHTML = room.dataset.name;
         document.getElementById("received").innerHTML = "";
         messageIterator = con.createMessagesIterator({ limit: 20 });
         messageIterator.next().then(function (result) {
@@ -174,14 +167,12 @@ function getNownickname() {
     var nicknamequery = new AV.Query('User_nickname');
     nicknamequery.equalTo('UserId', iMClient.id);
     nicknamequery.find().then((nickname) => {
-        console.log(nickname);
         if (nickname.length == 0) {
             const Nick = AV.Object.extend('User_nickname');
             const nick = new Nick();
             nick.set("nickname", "路人");
             nick.set("UserId", iMClient.id);
             nick.save().then((nick) => {
-                console.log(`保存成功。objectId：${nick.id}`);
             }, (error) => {
                 console.log(`wrong in saving`);
             });
@@ -192,7 +183,6 @@ function getNownickname() {
             nickname[0].fetch().then((newnickname) => {
                 document.getElementById("mynickname").innerHTML = newnickname.get("nickname");
                 myNickname = document.getElementById("mynickname").innerHTML;
-                console.log(myNickname);
             })
         }
 
@@ -200,7 +190,6 @@ function getNownickname() {
 }
 realtime.createIMClient(currentUser).then(function (user) {
     iMClient = user;
-    console.log(iMClient);
     getNownickname();
     setContacterlist(iMClient);
     myId = iMClient.id;
@@ -208,10 +197,25 @@ realtime.createIMClient(currentUser).then(function (user) {
         console.log(payload.invitedBy, conversation.id);
         setContacterlist(iMClient);
     });
-
+    const chatquery = new AV.Query('ChatRoom');
+    chatquery.equalTo('user', myId);
+    chatquery.count().then((count) => {
+        if (count != 0) {
+            document.getElementById('mychatroom').hidden = true;
+            document.getElementById('changeroomname').hidden = false;
+            document.getElementById('chatroomname').hidden = true;
+            document.getElementById('yeschangeroomname').hidden = true;
+        }
+        else{
+            document.getElementById('mychatroom').hidden = false;
+            document.getElementById('changeroomname').hidden = true;
+            document.getElementById('chatroomname').hidden = true;
+            document.getElementById('yeschangeroomname').hidden = true;
+        }
+    });
     user.on('message', function (message, conversation) {
         console.log('收到新消息：' + message.text);
-        if (message.from == conversationContacterId || conversation.id==conversationContacterId) {
+        if (message.from == conversationContacterId || conversation.id == conversationContacterId) {
             document.getElementById("received").innerHTML = document.getElementById("received").innerHTML + "<p>" + conversationContacterNickename + ":" + message.text;
         }
         else {
@@ -222,8 +226,8 @@ realtime.createIMClient(currentUser).then(function (user) {
 if (!currentUser) {
     window.location.href = "index.html";
 }
+
 function newMessage(message) {
-    console.log(message);
     document.getElementById("newmessage").innerHTML = Id2nickname.get(message.from) + ":" + message.text;
     sleep(2000).then(() => {
         document.getElementById("newmessage").innerHTML = "";
@@ -296,5 +300,46 @@ function findRandomcontacter() {
     });
 }
 function newchatroom() {
-    iMClient.createChatRoom({ name: 'test聊天室' }).catch(console.error);
+    iMClient.createChatRoom({ name: '聊天室' }).catch(console.error);
+
+    var iquery = iMClient.getQuery().equalTo('tr', true).equalTo('c', myId); // 聊天室对象
+    iquery.find().then(function (nconversations) {
+        console.log(nconversations);
+        const Tosave = AV.Object.extend('ChatRoom');
+        const tosave = new Tosave();
+        tosave.set('user', myId);
+        tosave.set('name', "聊天室");
+        tosave.set('cid', nconversations[0].id);
+        tosave.save().then((tosave) => {
+        }, (error) => {
+
+        });
+    }).catch(console.error);
+    document.getElementById('mychatroom').hidden = true;
+    document.getElementById('changeroomname').hidden = false;
+    document.getElementById('chatroomname').hidden = true;
+    document.getElementById('yeschangeroomname').hidden = true;
+    
+    
+}
+function changechatroom ()
+{
+    document.getElementById('changeroomname').hidden = true;
+    document.getElementById('chatroomname').hidden = false;
+    document.getElementById('yeschangeroomname').hidden = false;
+}
+function yeschangechatroom ()
+{
+    const chatquery = new AV.Query('ChatRoom');
+    chatquery.equalTo('user', myId);
+    chatquery.find().then((ans) => {
+        temp = ans[0].id;
+        const toSave = AV.Object.createWithoutData('ChatRoom', temp);
+        toSave.set('name', document.getElementById('chatroomname').value); 
+        toSave.save();
+    });
+    document.getElementById('changeroomname').hidden = false;
+    document.getElementById('chatroomname').hidden = true;
+    document.getElementById('yeschangeroomname').hidden = true;
+    setContacterlist(iMClient);
 }

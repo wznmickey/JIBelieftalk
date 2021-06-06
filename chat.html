@@ -9,10 +9,7 @@
     crossorigin="anonymous"></script>
 <link rel="stylesheet" type="text/css" href="main.css">
 <!--left part-->
-<div id="leftpart" style="position: fixed; width: 29%;max-width: 29%;text-size-adjust: none;">
-    <div>
-        <button onclick="newchatroom()">创建聊天室</button>
-    </div>
+<div id="leftpart" style="position: absolute; width: 29%;max-width: 29%;text-size-adjust: none;">
     <div id="leftpart1" style="text-align: center;">
         <input id="inputCertainUser" hidden></input>
         <button id="connectCertainUser" onclick="connect()" hidden>连接</button>
@@ -33,6 +30,10 @@
     <button class="btn btn-outline-info" type="button" id="log_out" onclick="logout()" style="background-color: rgba(255, 255, 255, .2);"
         class="inputB"><span>登出</span></button>
     </div>
+    <button id="mychatroom" class="nickname btn btn-outline-info" onclick="newchatroom()">创建聊天室</button>
+    <button id="changeroomname" class="nickname btn btn-outline-info" onclick="changechatroom()">修改聊天室名称</button>
+    <input id="chatroomname">
+    <button id="yeschangeroomname"class="nickname btn btn-outline-info" onclick="yeschangechatroom()">确定</button>
 </div>
 
 <!--right part-->
